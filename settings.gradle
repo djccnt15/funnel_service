@@ -1,0 +1,5 @@
+rootProject.name = 'funnel_service'
+include 'funnel'
+include 'main'
+include 'server'
+

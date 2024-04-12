@@ -1,0 +1,10 @@
+spring:
+  application:
+    name: main
+
+server:
+  port: 8000
+
+logging:
+  level:
+    root: INFO
