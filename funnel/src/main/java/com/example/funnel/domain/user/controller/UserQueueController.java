@@ -34,8 +34,8 @@ public class UserQueueController {
     @GetMapping(path = "/available")
     public Mono<AllowedUserResponse> isAllowedUser(
         @RequestParam(name = "queue", defaultValue = "default") String queue,
-        @RequestParam(name = "user_id") Long count
+        @RequestParam(name = "user_id") Long userId
     ) {
-        return userQueueBusiness.isAllowedUser(queue, count)            ;
+        return userQueueBusiness.isAllowedUser(queue, userId);
     }
 }
