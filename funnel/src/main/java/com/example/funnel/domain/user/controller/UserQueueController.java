@@ -3,6 +3,7 @@ package com.example.funnel.domain.user.controller;
 import com.example.funnel.domain.user.business.UserQueueBusiness;
 import com.example.funnel.domain.user.model.AllowUserResponse;
 import com.example.funnel.domain.user.model.AllowedUserResponse;
+import com.example.funnel.domain.user.model.RankNumberResponse;
 import com.example.funnel.domain.user.model.RegisterUserResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
@@ -37,5 +38,13 @@ public class UserQueueController {
         @RequestParam(name = "user_id") Long userId
     ) {
         return userQueueBusiness.isAllowedUser(queue, userId);
+    }
+    
+    @GetMapping(path = "/rank")
+    public Mono<RankNumberResponse> getUserRank(
+        @RequestParam(name = "queue", defaultValue = "default") String queue,
+        @RequestParam(name = "user_id") Long userId
+    ) {
+        return userQueueBusiness.getRank(queue, userId);
     }
 }

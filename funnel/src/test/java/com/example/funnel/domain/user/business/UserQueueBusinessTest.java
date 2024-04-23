@@ -3,6 +3,7 @@ package com.example.funnel.domain.user.business;
 import com.example.funnel.EmbeddedRedis;
 import com.example.funnel.domain.user.model.AllowUserResponse;
 import com.example.funnel.domain.user.model.AllowedUserResponse;
+import com.example.funnel.domain.user.model.RankNumberResponse;
 import com.example.funnel.domain.user.model.RegisterUserResponse;
 import com.example.funnel.exception.ApiException;
 import org.junit.jupiter.api.BeforeEach;
@@ -86,9 +87,9 @@ class UserQueueBusinessTest {
         StepVerifier
             .create(
                 userQueueBusiness.registerUser(testQueue, 100L)
-                .then(userQueueBusiness.registerUser(testQueue, 101L))
-                .then(userQueueBusiness.registerUser(testQueue, 102L))
-                .then(userQueueBusiness.allowUser(testQueue, 2L))
+                    .then(userQueueBusiness.registerUser(testQueue, 101L))
+                    .then(userQueueBusiness.registerUser(testQueue, 102L))
+                    .then(userQueueBusiness.allowUser(testQueue, 2L))
             )
             .expectNext(
                 AllowUserResponse.builder()
@@ -104,9 +105,9 @@ class UserQueueBusinessTest {
         StepVerifier
             .create(
                 userQueueBusiness.registerUser(testQueue, 100L)
-                .then(userQueueBusiness.registerUser(testQueue, 101L))
-                .then(userQueueBusiness.registerUser(testQueue, 102L))
-                .then(userQueueBusiness.allowUser(testQueue, 5L))
+                    .then(userQueueBusiness.registerUser(testQueue, 101L))
+                    .then(userQueueBusiness.registerUser(testQueue, 102L))
+                    .then(userQueueBusiness.allowUser(testQueue, 5L))
             )
             .expectNext(
                 AllowUserResponse.builder()
@@ -161,5 +162,34 @@ class UserQueueBusinessTest {
             )
             .expectNext(AllowedUserResponse.builder().allowed(true).build())
             .verifyComplete();
+    }
+    
+    @Test
+    void getRank() {
+        Long userId1 = 100L;
+        Long userId2 = 101L;
+        
+        StepVerifier
+            .create(userQueueBusiness.registerUser(testQueue, userId1)
+                .then(userQueueBusiness.getRank(testQueue, userId1))
+            )
+            .expectNext(RankNumberResponse.builder().rank(1L).build())
+            .verifyComplete();
+        
+        StepVerifier
+            .create(userQueueBusiness.registerUser(testQueue, userId2)
+                .then(userQueueBusiness.getRank(testQueue, userId2))
+            )
+            .expectNext(RankNumberResponse.builder().rank(2L).build())
+            .verifyComplete();
+    }
+    
+    @Test
+    void emptyRank() {
+        StepVerifier
+            .create(userQueueBusiness.getRank(testQueue, 100L))
+            .expectNext(RankNumberResponse.builder().rank(-1L).build())
+            .verifyComplete();
+        
     }
 }

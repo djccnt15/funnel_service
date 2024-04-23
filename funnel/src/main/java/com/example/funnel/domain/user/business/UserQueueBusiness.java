@@ -4,6 +4,7 @@ import com.example.funnel.annotation.Business;
 import com.example.funnel.domain.user.converter.UserQueueConverter;
 import com.example.funnel.domain.user.model.AllowUserResponse;
 import com.example.funnel.domain.user.model.AllowedUserResponse;
+import com.example.funnel.domain.user.model.RankNumberResponse;
 import com.example.funnel.domain.user.model.RegisterUserResponse;
 import com.example.funnel.domain.user.service.UserQueueService;
 import lombok.RequiredArgsConstructor;
@@ -33,5 +34,10 @@ public class UserQueueBusiness {
         return userQueueService.isAllowedUser(queue, userId)
             .map(allowed -> AllowedUserResponse.builder()
                 .allowed(allowed).build());
+    }
+    
+    public Mono<RankNumberResponse> getRank(String queue, Long userId) {
+        return userQueueService.getRank(queue, userId)
+            .map(rank -> RankNumberResponse.builder().rank(rank).build());
     }
 }
