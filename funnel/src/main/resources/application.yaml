@@ -9,6 +9,9 @@ spring:
 server:
   port: 8080
 
+scheduler:
+  enabled: true
+
 logging:
   level:
     root: INFO
@@ -23,3 +26,6 @@ spring:
     redis:
       host: 127.0.0.1
       port: 16379
+
+scheduler:
+  enabled: false
