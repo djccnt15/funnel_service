@@ -13,8 +13,12 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.Import;
 import org.springframework.data.redis.connection.ReactiveRedisConnection;
 import org.springframework.data.redis.core.ReactiveRedisTemplate;
+import org.springframework.mock.http.server.reactive.MockServerHttpRequest;
+import org.springframework.mock.web.server.MockServerWebExchange;
 import org.springframework.test.context.ActiveProfiles;
 import reactor.test.StepVerifier;
+
+import java.security.NoSuchAlgorithmException;
 
 @SpringBootTest
 @Import(EmbeddedRedis.class)
@@ -190,6 +194,18 @@ class UserQueueBusinessTest {
             .create(userQueueBusiness.getRank(testQueue, 100L))
             .expectNext(RankNumberResponse.builder().rank(-1L).build())
             .verifyComplete();
+    }
+    
+    @Test
+    void generateToken() throws NoSuchAlgorithmException {
+        MockServerWebExchange exchange = MockServerWebExchange.from(
+            MockServerHttpRequest.get("/")
+        );
         
+        // SHA-256 알고리즘은 입력값이 같을 경우 항상 동일한 결과값을 출력함
+        StepVerifier
+            .create(userQueueBusiness.generateToken(testQueue, 100L, exchange))
+            .expectNext("d333a5d4eb24f3f5cdd767d79b8c01aad3cd73d3537c70dec430455d37afe4b8")
+            .verifyComplete();
     }
 }

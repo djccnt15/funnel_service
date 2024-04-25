@@ -10,8 +10,14 @@ import com.example.funnel.domain.user.service.UserQueueService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.ResponseCookie;
 import org.springframework.scheduling.annotation.Scheduled;
+import org.springframework.web.server.ServerWebExchange;
 import reactor.core.publisher.Mono;
+
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+import java.time.Duration;
 
 @Slf4j
 @Business
@@ -20,6 +26,7 @@ public class UserQueueBusiness {
     
     private final UserQueueService userQueueService;
     private final UserQueueConverter userQueueConverter;
+    private final String SHA256 = "SHA-256";
     
     @Value("${scheduler.enabled}")
     private final Boolean scheduling = false;
@@ -60,5 +67,25 @@ public class UserQueueBusiness {
         
         var maxAllowUser = 3L;
         userQueueService.scheduleAllowUser(maxAllowUser);
+    }
+    
+    public Mono<String> generateToken(
+        String queue, Long userId, ServerWebExchange exchange
+    ) throws NoSuchAlgorithmException {
+        MessageDigest digest = MessageDigest.getInstance(SHA256);
+        var input = "user-queue-%s-%d".formatted(queue, userId);
+        var token = userQueueService.generateToken(input, digest);
+        
+        return Mono.defer(() -> token)
+            .map(t -> {
+                exchange.getResponse().addCookie(
+                    ResponseCookie
+                        .from("user-queue-%s-token".formatted(queue), t)
+                        .maxAge(Duration.ofSeconds(300))
+                        .path("/")
+                        .build()
+                );
+                return t;
+            });
     }
 }

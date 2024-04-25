@@ -9,6 +9,8 @@ import org.springframework.stereotype.Service;
 import reactor.core.publisher.Mono;
 import reactor.util.function.Tuples;
 
+import java.nio.charset.StandardCharsets;
+import java.security.MessageDigest;
 import java.time.Instant;
 import java.util.Objects;
 
@@ -87,5 +89,16 @@ public class UserQueueService {
             )
             .doOnNext(tuple -> log.info("queue: {}, tried: {}, allowed: {}", tuple.getT1(), maxAllowUser, tuple.getT2()))
             .subscribe();
+    }
+    
+    public Mono<String> generateToken(final String input, MessageDigest digest) {
+        StringBuilder hexString = new StringBuilder();
+        
+        byte[] encodedHash = digest.digest(input.getBytes(StandardCharsets.UTF_8));
+        for (byte aByte : encodedHash) {
+            hexString.append(String.format("%02x", aByte));
+        }
+        
+        return Mono.just(hexString.toString());
     }
 }

@@ -7,7 +7,10 @@ import com.example.funnel.domain.user.model.RankNumberResponse;
 import com.example.funnel.domain.user.model.RegisterUserResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ServerWebExchange;
 import reactor.core.publisher.Mono;
+
+import java.security.NoSuchAlgorithmException;
 
 @RestController
 @RequestMapping(path = "api/user/queue")
@@ -46,5 +49,14 @@ public class UserQueueController {
         @RequestParam(name = "user_id") Long userId
     ) {
         return userQueueBusiness.getRank(queue, userId);
+    }
+    
+    @GetMapping(path = "/touch")
+    public Mono<String> touch(
+        @RequestParam(name = "queue", defaultValue = "default") String queue,
+        @RequestParam(name = "user_id") Long userId,
+        ServerWebExchange exchange
+    ) throws NoSuchAlgorithmException {
+        return userQueueBusiness.generateToken(queue, userId, exchange);
     }
 }
