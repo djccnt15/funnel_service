@@ -11,6 +11,7 @@ import reactor.util.function.Tuples;
 
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.time.Instant;
 import java.util.Objects;
 
@@ -91,7 +92,13 @@ public class UserQueueService {
             .subscribe();
     }
     
-    public Mono<String> generateToken(final String input, MessageDigest digest) {
+    public Mono<String> generateToken(
+        final String queue,
+        final Long userId
+    ) throws NoSuchAlgorithmException {
+        MessageDigest digest = MessageDigest.getInstance("SHA-256");
+        var input = "user-queue-%s-%d".formatted(queue, userId);
+        
         StringBuilder hexString = new StringBuilder();
         
         byte[] encodedHash = digest.digest(input.getBytes(StandardCharsets.UTF_8));

@@ -26,7 +26,6 @@ public class UserQueueBusiness {
     
     private final UserQueueService userQueueService;
     private final UserQueueConverter userQueueConverter;
-    private final String SHA256 = "SHA-256";
     
     @Value("${scheduler.enabled}")
     private final Boolean scheduling = false;
@@ -72,9 +71,7 @@ public class UserQueueBusiness {
     public Mono<String> generateToken(
         String queue, Long userId, ServerWebExchange exchange
     ) throws NoSuchAlgorithmException {
-        MessageDigest digest = MessageDigest.getInstance(SHA256);
-        var input = "user-queue-%s-%d".formatted(queue, userId);
-        var token = userQueueService.generateToken(input, digest);
+        var token = userQueueService.generateToken(queue, userId);
         
         return Mono.defer(() -> token)
             .map(t -> {
