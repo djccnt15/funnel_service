@@ -197,6 +197,22 @@ class UserQueueBusinessTest {
     }
     
     @Test
+    void isNotAllowedByToken() throws NoSuchAlgorithmException {
+        StepVerifier
+            .create(userQueueBusiness.isAllowedByToken(testQueue, 100L, ""))
+            .expectNext(AllowedUserResponse.builder().allowed(false).build())
+            .verifyComplete();
+    }
+    
+    @Test
+    void isAllowedByToken() throws NoSuchAlgorithmException {
+        StepVerifier
+            .create(userQueueBusiness.isAllowedByToken(testQueue, 100L, "d333a5d4eb24f3f5cdd767d79b8c01aad3cd73d3537c70dec430455d37afe4b8"))
+            .expectNext(AllowedUserResponse.builder().allowed(true).build())
+            .verifyComplete();
+    }
+    
+    @Test
     void generateToken() throws NoSuchAlgorithmException {
         MockServerWebExchange exchange = MockServerWebExchange.from(
             MockServerHttpRequest.get("/")

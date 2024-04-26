@@ -15,7 +15,6 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.web.server.ServerWebExchange;
 import reactor.core.publisher.Mono;
 
-import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.time.Duration;
 
@@ -47,6 +46,17 @@ public class UserQueueBusiness {
         return userQueueService.isAllowedUser(queue, userId)
             .map(allowed -> AllowedUserResponse.builder()
                 .allowed(allowed).build());
+    }
+    
+    public Mono<AllowedUserResponse> isAllowedByToken(
+        String queue, Long userId, String token
+    ) throws NoSuchAlgorithmException {
+        var generatedToken = userQueueService.generateToken(queue, userId);
+        
+        return userQueueService.isAllowedByToken(generatedToken, token)
+            .map(allowed -> AllowedUserResponse.builder()
+                .allowed(allowed).build()
+            );
     }
     
     public Mono<RankNumberResponse> getRank(String queue, Long userId) {

@@ -38,9 +38,10 @@ public class UserQueueController {
     @GetMapping(path = "/available")
     public Mono<AllowedUserResponse> isAllowedUser(
         @RequestParam(name = "queue", defaultValue = "default") String queue,
-        @RequestParam(name = "user_id") Long userId
-    ) {
-        return userQueueBusiness.isAllowedUser(queue, userId);
+        @RequestParam(name = "user_id") Long userId,
+        @RequestParam(name = "token") String token
+    ) throws NoSuchAlgorithmException {
+        return userQueueBusiness.isAllowedByToken(queue, userId, token);
     }
     
     @GetMapping(path = "/rank")

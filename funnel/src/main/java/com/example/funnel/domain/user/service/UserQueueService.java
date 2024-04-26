@@ -67,6 +67,15 @@ public class UserQueueService {
             .map(rank -> rank >= 0);
     }
     
+    public Mono<Boolean> isAllowedByToken(
+        final Mono<String> generatedToken,
+        final String cookieToken
+    ) {
+        return generatedToken.filter(gen -> gen.equalsIgnoreCase(cookieToken))
+            .map(i -> true)
+            .defaultIfEmpty(false);
+    }
+    
     public Mono<Long> getRank(
         final String queue,
         final Long userId
