@@ -1,6 +1,5 @@
 package com.example.funnel.domain.user.model;
 
-
 import lombok.*;
 
 @Data
